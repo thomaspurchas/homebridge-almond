@@ -8,6 +8,10 @@
   },
   "author": "Thomas Purchas",
   "license": "ISC",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/thomaspurchas/homebridge-almond"
+  },
   "keywords": [
     "homebridge-plugin"
   ],
