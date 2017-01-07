@@ -1,0 +1,22 @@
+{
+  "name": "homebridge-almond",
+  "version": "1.0.0",
+  "description": "Homebridge platform plugin for Almond+",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Thomas Purchas",
+  "license": "ISC",
+  "keywords": [
+    "homebridge-plugin"
+  ],
+  "dependencies": {
+    "almond-client": "^0.1.2",
+    "debug": "^2.6.0"
+  },
+  "engines": {
+    "node": ">=0.12.0",
+    "homebridge": ">=0.2.0"
+  }
+}
