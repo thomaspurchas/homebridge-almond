@@ -1,6 +1,6 @@
 {
   "name": "homebridge-almond",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Homebridge platform plugin for Almond+",
   "main": "index.js",
   "scripts": {
@@ -9,8 +9,8 @@
   "author": "Thomas Purchas",
   "license": "ISC",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/thomaspurchas/homebridge-almond"
+    "type": "git",
+    "url": "https://github.com/thomaspurchas/homebridge-almond"
   },
   "keywords": [
     "homebridge-plugin"
