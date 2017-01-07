@@ -156,7 +156,9 @@ AlmondAccessory.prototype.setSwitchState = function(state, callback) {
     this.log("Setting switch [%s] to: %s [%s]", this.accessory.displayName, state, typeof state);
     var value = (state | 0) ? true:false;
 
-    this.device.setProp(this.device.props.SwitchBinary, value, callback);
+    this.device.setProp(this.device.props.SwitchBinary, value, function() {
+        callback(null);
+    });
 }
 
 AlmondAccessory.prototype.updateSwitchState = function(value) {
