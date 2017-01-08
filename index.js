@@ -42,7 +42,7 @@ function AlmondPlatform(log, config, api) {
 
         platform.client.on("ready", function() {
             platform.client.getDevices().forEach(platform.addAccessory.bind(platform));
-            platform._cleanAccessories();
+            platform._pruneAccessories();
         });
     });
 }
@@ -87,7 +87,7 @@ AlmondPlatform.prototype.configureAccessory = function(accessory) {
     this.accessories[accessory.UUID] = accessory;
 }
 
-AlmondPlatform.prototype._cleanAccessories = function() {
+AlmondPlatform.prototype._pruneAccessories = function() {
     // After we have got all the devices from the Almond, check to see if we have any dead
     // cached devices and kill them.
     for(var key in this.accessories) {
