@@ -42,6 +42,7 @@ function AlmondPlatform(log, config, api) {
 
         platform.client.on("ready", function() {
             platform.client.getDevices().forEach(platform.addAccessory.bind(platform));
+            platform._cleanAccessories();
         });
     });
 }
@@ -63,7 +64,7 @@ AlmondPlatform.prototype.addAccessory = function(device) {
 
     this.log("Found: %s [%s]", device.name, device.type);
 
-    var uuid = UUIDGen.generate(device.id);
+    var uuid = UUIDGen.generate('AlmondDevice: '.concat(device.id));
 
     var accessory = this.accessories[uuid];
     if (accessory === undefined) {
@@ -81,9 +82,23 @@ AlmondPlatform.prototype.addAccessory = function(device) {
 }
 
 AlmondPlatform.prototype.configureAccessory = function(accessory) {
-    this.log(accessory.displayName, "Configure Accessory");
+    this.log("Configuring Accessory from cache: %s [%s]", accessory.UUID, accessory.displayName);
     accessory.updateReachability(true);
     this.accessories[accessory.UUID] = accessory;
+}
+
+AlmondPlatform.prototype._cleanAccessories = function() {
+    // After we have got all the devices from the Almond, check to see if we have any dead
+    // cached devices and kill them.
+    for(var key in this.accessories) {
+        var accessory = this.accessories[key];
+        this.log("Checking existance of %s", accessory.displayName);
+        if (!(accessory instanceof AlmondAccessory)) {
+            this.log("Did not find device for accessory %s so removing it", accessory.displayName);
+            this.api.unregisterPlatformAccessories("homebridge-platform-almond", "Almond", [accessory]);
+            delete this.accessories[key];
+        }
+    }
 }
 
 function AlmondAccessory(log, accessory, device) {
@@ -91,6 +106,8 @@ function AlmondAccessory(log, accessory, device) {
     this.accessory = accessory;
     this.device = device;
     this.log = log;
+
+    this.displayName = this.accessory.displayName;
 
     this.log("Setting up: %s", accessory.displayName);
 
