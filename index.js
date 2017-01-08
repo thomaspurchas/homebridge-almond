@@ -125,7 +125,10 @@ function AlmondAccessory(log, accessory, device) {
 
     this.accessory.on('identify', function(paired, callback) {
         self.log("%s - identify", self.accessory.displayName);
-        callback();
+        self.getSwitchState(function(err, state) {
+            self.setSwitchState(!state);
+            callback();
+        });
     });
 
     this.observeDevice(device);
@@ -169,12 +172,12 @@ AlmondAccessory.prototype.getSwitchState = function(cb) {
     cb(null, state);
 }
 
-AlmondAccessory.prototype.setSwitchState = function(state, callback) {
+AlmondAccessory.prototype.setSwitchState = function(state, cb) {
     this.log("Setting switch [%s] to: %s [%s]", this.accessory.displayName, state, typeof state);
     var value = (state | 0) ? true:false;
 
     this.device.setProp(this.device.props.SwitchBinary, value, function() {
-        callback(null);
+        if (cb) cb(null);
     });
 }
 
