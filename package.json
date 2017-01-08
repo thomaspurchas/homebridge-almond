@@ -1,6 +1,6 @@
 {
   "name": "homebridge-almond",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Homebridge platform plugin for Almond+",
   "main": "index.js",
   "scripts": {
