@@ -57,28 +57,38 @@ AlmondPlatform.prototype.addAccessory = function(device) {
         services.push(Service.Switch);
     }
 
+    if (device.props.SwitchBinary1 !== undefined) {
+        services.push(Service.Switch);
+    }
+
     if (services.length === 0) {
         this.log("Not supported: %s [%s]", device.name, device.type);
         return;
     }
 
-    this.log("Found: %s [%s]", device.name, device.type);
+    for(var id in device._deviceValues){
+        if (device._deviceValues.hasOwnProperty(id)) {
+            var deviceValue = device._deviceValues[id];
 
-    var uuid = UUIDGen.generate('AlmondDevice: '.concat(device.id));
+            this.log("Found: %s (%s) [%s]", device.name, deviceValue.name, device.type);
 
-    var accessory = this.accessories[uuid];
-    if (accessory === undefined) {
-        var accessory = new Accessory(device.name, uuid);
-        this.api.registerPlatformAccessories("homebridge-platform-almond", "Almond", [accessory]);
-    }
+            var uuid = UUIDGen.generate('AlmondDevice: '.concat(device.id).concat('-').concat(deviceValue.id));
 
-    services.forEach(function(service) {
-        if (accessory.getService(service) == undefined) {
-            accessory.addService(service, device.name);
+            var accessory = this.accessories[uuid];
+            if (accessory === undefined) {
+                var accessory = new Accessory(device.name.concat(' (').concat(deviceValue.name).concat(')'), uuid);
+                this.api.registerPlatformAccessories("homebridge-platform-almond", "Almond", [accessory]);
+            }
+
+            services.forEach(function(service) {
+                if (accessory.getService(service) == undefined) {
+                    accessory.addService(service, device.name);
+                }
+            });
         }
-    });
 
-    this.accessories[accessory.UUID] = new AlmondAccessory(this.log, accessory, device);
+        this.accessories[accessory.UUID] = new AlmondAccessory(this.log, accessory, device, deviceValue.id);
+    }
 }
 
 AlmondPlatform.prototype.configureAccessory = function(accessory) {
@@ -101,11 +111,12 @@ AlmondPlatform.prototype._pruneAccessories = function() {
     }
 }
 
-function AlmondAccessory(log, accessory, device) {
+function AlmondAccessory(log, accessory, device, valueId) {
     var self = this;
     this.accessory = accessory;
     this.device = device;
     this.log = log;
+    this.valueId = valueId;
 
     this.displayName = this.accessory.displayName;
 
@@ -152,7 +163,7 @@ AlmondAccessory.prototype.addEventHandlers = function(device) {
 
     this.device.on('valueUpdated', function(prop, value) {
         self.log("Value updated: %s -> %s [%s]", prop, value, this.id);
-        if (this.props.SwitchBinary == prop) {
+        if (this.valueId == prop) {
             value = 'true' === value;
             self.log("Switch state changed to: %s [%s]", value, typeof value);
             self.updateSwitchState(value);
@@ -161,7 +172,7 @@ AlmondAccessory.prototype.addEventHandlers = function(device) {
 }
 
 AlmondAccessory.prototype.getSwitchState = function(cb) {
-    var state = this.device.getProp(this.device.props.SwitchBinary);
+    var state = this.device.getProp(this.valueId);
     state = state == 'true';// Convert into 1 or 0 from True/False
     this.log(
         "Getting state for: %s and state is %s [%s]",
@@ -176,7 +187,7 @@ AlmondAccessory.prototype.setSwitchState = function(state, cb) {
     this.log("Setting switch [%s] to: %s [%s]", this.accessory.displayName, state, typeof state);
     var value = (state | 0) ? true:false;
 
-    this.device.setProp(this.device.props.SwitchBinary, value, function() {
+    this.device.setProp(this.valueId, value, function() {
         if (cb) cb(null);
     });
 }
