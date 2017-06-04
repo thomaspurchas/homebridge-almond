@@ -68,6 +68,10 @@ AlmondPlatform.prototype.addAccessory = function(device) {
 
     for(var id in device._deviceValues){
         if (device._deviceValues.hasOwnProperty(id)) {
+            if(id != device.props.SwitchBinary && id != device.props.SwitchBinary1 && id != device.props.SwitchBinary2) {
+                return; //This particular device value in the device is not a switch but some other unsupported type
+            }
+
             var deviceValue = device._deviceValues[id];
 
             this.log("Found: %s (%s) [%s]", device.name, deviceValue.name, device.type);
