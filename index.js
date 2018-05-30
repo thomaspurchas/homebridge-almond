@@ -53,7 +53,7 @@ AlmondPlatform.prototype.addAccessory = function(device) {
 
     this.log("Got device: %s [%s]", device.name, device.id)
 
-    if (device.props.SwitchBinary !== undefined) {
+    if (device.props && device.props.SwitchBinary !== undefined) {
         services.push(Service.Switch);
     }
 
